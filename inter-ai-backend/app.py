@@ -68,8 +68,8 @@ flask_cors.CORS(app, resources={
         "origins": [
             "http://localhost:3000",
             "http://localhost:5173",
-            "https://coactai.vercel.app/",  # Replace with your actual Vercel app URL
-            "https://coactai.vercel.app/"          # Allow all preview deployments
+            "https://coactai.vercel.app",     # Production deployment
+            "https://*.vercel.app"            # All preview deployments
         ],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True

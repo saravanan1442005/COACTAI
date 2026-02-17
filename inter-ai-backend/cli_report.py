@@ -1227,8 +1227,8 @@ class DashboardPDF(FPDF):
             self.cell(3, 6, "|", 0, 0)
             
             self.set_text_color(*COLORS['text_main'])
-            self.multi_cell(150, 6, desc)
-            current_y += 7
+            self.multi_cell(150, 5, desc)
+            current_y = self.get_y() + 2
 
         self.set_y(start_y + 42)
 
@@ -1396,7 +1396,7 @@ class DashboardPDF(FPDF):
                 self.set_font('Arial', '', 9)
                 self.set_text_color(*COLORS['text_main'])
                 self.multi_cell(180, 5, insight, align='J')
-                current_y = self.get_y() + 4
+                current_y = self.get_y() + 3
                 
             # Improved Approach (Actionable Advice)
             if improved:
@@ -1800,15 +1800,16 @@ class DashboardPDF(FPDF):
             self.set_font('Arial', '', 8)
             current_x = self.get_x()
             current_y = self.get_y()
-            self.multi_cell(w_interp, 7.5, interp, border=1, align='L')
+            self.multi_cell(w_interp, 5, interp, border=1, align='L')
             
             # Improvement tip
             self.set_xy(current_x + w_interp, current_y)
             self.set_text_color(*COLORS['accent'])
-            self.multi_cell(w_tip, 7.5, tip, border=1, align='L')
+            self.multi_cell(w_tip, 5, tip, border=1, align='L')
             
-            # Move to next row
-            self.set_xy(10, current_y + row_height)
+            # Calculate actual height used and move to next row
+            actual_height = max(self.get_y() - current_y, row_height)
+            self.set_xy(10, current_y + actual_height)
 
         self.ln(5)
 
@@ -1943,11 +1944,13 @@ class DashboardPDF(FPDF):
             
             # Multi-cell handling with background fill
             self.set_xy(x_start + 70, y_start)
-            self.multi_cell(120, row_height, desc, border=0, align='L', fill=True)
+            self.multi_cell(120, 5, desc, border=0, align='L', fill=True)
             
-            # Reset position for next row manually if multi_cell didn't perfectly align
-            self.set_xy(x_start, y_start + row_height)
-            self.line(x_start, y_start + row_height, x_start + 190, y_start + row_height) # Bottom border
+            # Reset position for next row manually after multi_cell
+            actual_height = self.get_y() - y_start
+            final_height = max(row_height, actual_height)
+            self.set_xy(x_start, y_start + final_height)
+            self.line(x_start, self.get_y(), x_start + 190, self.get_y()) # Bottom border
             self.set_text_color(*COLORS['text_main']) # Reset color
             
             # Alternative Questions / Try Asking Instead
@@ -1964,9 +1967,9 @@ class DashboardPDF(FPDF):
                     q_text = aq.get('question', '')
                     if q_text:
                         self.set_x(x_start + 70)
-                        self.multi_cell(120, 4, f"- \"{sanitize_text(q_text)}\"", 0, 'L')
+                        self.multi_cell(120, 5, f"- \"{sanitize_text(q_text)}\"", 0, 'L')
                 
-                self.ln(2) # Extra spacing after alts
+                self.ln(3) # Extra spacing after alts
 
     def draw_radar_chart(self, scorecard):
         """Draw a radar chart for the scorecard dimensions."""
@@ -2132,8 +2135,8 @@ class DashboardPDF(FPDF):
             x = self.get_x()
             y = self.get_y()
             
-            self.multi_cell(col_width - 10, 6, sanitize_text(str(item)))
-            current_y_left = self.get_y() + 1 # small gap
+            self.multi_cell(col_width - 10, 5, sanitize_text(str(item)))
+            current_y_left = self.get_y() + 2 # spacing between items
             
         # Draw RIGHT Items
         current_y_right = content_start_y + 2
@@ -2143,8 +2146,8 @@ class DashboardPDF(FPDF):
             self.cell(5, 6, "!", 0, 0)
             self.set_text_color(*COLORS['text_main'])
             
-            self.multi_cell(col_width - 10, 6, sanitize_text(str(item)))
-            current_y_right = self.get_y() + 1 
+            self.multi_cell(col_width - 10, 5, sanitize_text(str(item)))
+            current_y_right = self.get_y() + 2 
 
         # Move cursor to bottom of tallest column
         self.set_y(content_start_y + max_h + 5)
@@ -2238,7 +2241,7 @@ class DashboardPDF(FPDF):
                 self.cell(90, 6, sanitize_text(s.get('from','')), 0, 0)
                 self.cell(10, 6, "->", 0, 0)
                 self.set_font('Arial', 'B', 9)
-                self.multi_cell(0, 6, sanitize_text(s.get('to','')))
+                self.multi_cell(0, 5, sanitize_text(s.get('to','')))
             self.ln(5)
 
         self.draw_list_section("PRACTICE PLAN", data.get('practice_plan', []), COLORS['success'])

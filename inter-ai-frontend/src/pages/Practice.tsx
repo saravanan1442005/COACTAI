@@ -15,7 +15,6 @@ import {
 import Navigation from "../components/landing/Navigation"
 import { getApiUrl } from "@/lib/api"
 import { toast } from "sonner"
-import type { Toaster } from "sonner"
 
 const ICON_MAP: any = {
     Users, ShoppingCart, GraduationCap, AlertTriangle, DollarSign, UserCog
