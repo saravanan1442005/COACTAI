@@ -62,8 +62,20 @@ except Exception as e:
     print(f" [WARNING] Database initialization failed: {e}")
     USE_DATABASE = False
 
-# Enable CORS
-flask_cors.CORS(app)
+# Enable CORS with Vercel support
+flask_cors.CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "https://coactai.vercel.app/",  # Replace with your actual Vercel app URL
+            "https://coactai.vercel.app/"          # Allow all preview deployments
+        ],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
+
 
 # ---------------------------------------------------------
 # In-Memory Storage (Fallback if Database not available)
@@ -1315,3 +1327,7 @@ def clear_sessions():
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8000"))
     app.run(host="0.0.0.0", port=port, debug=True)
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
